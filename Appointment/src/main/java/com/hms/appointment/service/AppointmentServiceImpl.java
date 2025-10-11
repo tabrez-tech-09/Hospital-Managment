@@ -110,5 +110,38 @@ public List<AppointmentDetails> getAllAppointmentsByDoctorId(Long doctorId) thro
             })
             .collect(Collectors.toList());
 }
+
+@Override
+public AppointmentDetails getAppointmentDetailsWithName(Long appointmentId) throws HmsException {
+    Appointment appointment = appointmentRepository.findById(appointmentId)
+            .orElseThrow(() -> new HmsException("Appointment not found with id: " + appointmentId, 404));
+
+    DoctorDTO doctorDTO = profileClient.getDoctorById(appointment.getDoctorId());
+    PatientDTO patientDTO = profileClient.getPatientById(appointment.getPatientId());
+
+    AppointmentDetails details = new AppointmentDetails();
+    details.setId(appointment.getId());
+    details.setPatientId(appointment.getPatientId());
+    details.setDoctorId(appointment.getDoctorId());
+    details.setAppointmentTime(appointment.getAppointmentTime());
+    details.setStatus(appointment.getStatus());
+    details.setReason(appointment.getReason());
+    details.setNotes(appointment.getNotes());
+
+    if (patientDTO != null) {
+        details.setPatientName(patientDTO.getName());
+        details.setPatientEmail(patientDTO.getEmail());
+        details.setPatientPhone(patientDTO.getPhone());
+    } else {
+        details.setPatientName("Unknown Patient");
+    }
+
+    if (doctorDTO != null) {
+        details.setDoctorName(doctorDTO.getName());
+    } else {
+        details.setDoctorName("Unknown Doctor");
+    }
+    return details;
+}
 }
 

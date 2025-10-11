@@ -58,7 +58,7 @@ public class AppointmentApi {
         return ResponseEntity.ok(appointments);
     }
     @GetMapping("/getAllByDoctor/{doctorId}")
-public ResponseEntity<List<AppointmentDetails>> getAllByDoctor(
+    public ResponseEntity<List<AppointmentDetails>> getAllByDoctor(
         @PathVariable Long doctorId) throws HmsException {
 
     List<AppointmentDetails> appointments =
@@ -66,5 +66,4 @@ public ResponseEntity<List<AppointmentDetails>> getAllByDoctor(
 
     return ResponseEntity.ok(appointments);
 }
-
 }

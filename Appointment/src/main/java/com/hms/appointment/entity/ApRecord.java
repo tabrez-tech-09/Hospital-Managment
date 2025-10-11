@@ -36,10 +36,21 @@ public class ApRecord {
     private LocalDate followUpDate;
     private LocalDateTime createdAt;
 
-    public ApRecordDTO toDTO(){
-        return new ApRecordDTO(id, patientId, doctorId, appointment.getId(),
-        StringListConverted.convertedStringToList(symptoms) , diagnosis,
-        StringListConverter.convertedListToString(test)
-         , notes referral . followUpDate , createdAt);
+    // ✅ Convert Entity → DTO
+    public ApRecordDTO toDTO() {
+        return new ApRecordDTO(
+            id,
+            patientId,
+            doctorId,
+            appointment,
+            StringListConverter.convertedStringToList(symptoms),
+            diagnosis,
+            StringListConverter.convertedStringToList(tests),
+            notes,
+            referral,
+            null,
+            followUpDate,
+            createdAt
+        );
     }
 }

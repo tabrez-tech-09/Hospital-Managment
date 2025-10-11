@@ -12,3 +12,4 @@ public interface ApRecordRepository extends CrudRepository<ApRecord, Long> {
     Optional<ApRecord> findByAppointment_Id(Long appointmentId);
 }
 
+
