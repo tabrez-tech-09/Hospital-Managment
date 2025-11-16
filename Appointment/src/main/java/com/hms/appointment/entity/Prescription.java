@@ -1,8 +1,8 @@
 package com.hms.appointment.entity;
-
 import java.time.LocalDate;
 
 import com.hms.appointment.dto.PrescriptionDTO;
+import com.hms.appointment.dto.PrescriptionDetails;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,7 +14,6 @@ import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 @Data
 @Entity
 @AllArgsConstructor
@@ -22,20 +21,26 @@ import lombok.NoArgsConstructor;
 public class Prescription {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY )
-    private Long id;
+    private Long id;  
     private Long patientId;
     private Long doctorId;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
     private LocalDate prescriptionDate;
     private String notes;
-    
     public Prescription(Long id){
         this.id = id;
     }
     public PrescriptionDTO toDto(){
         return new PrescriptionDTO(id, patientId, doctorId, appointment.getId(), prescriptionDate, notes, null);
     }
+
+
+
+    public PrescriptionDetails toPrescriptionDetails(){
+        return new PrescriptionDetails(id, patientId, doctorId, null, appointment.getId(), prescriptionDate, notes, null);
+    } 
+
+    
 }

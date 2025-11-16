@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.hms.appointment.dto.ApRecordDTO;
+import com.hms.appointment.dto.RecordDetails;
 import com.hms.appointment.utility.StringListConverter;
 
 @Data
@@ -49,6 +50,23 @@ public class ApRecord {
             notes,
             referral,
             null,
+            followUpDate,
+            createdAt
+        );
+    }
+
+    public RecordDetails toRecordDetails() {
+        return new RecordDetails(
+            id,
+            patientId,
+            doctorId,
+            null,
+            appointment != null ? appointment.getId() : null,
+            StringListConverter.convertedStringToList(symptoms),
+            diagnosis,
+            StringListConverter.convertedStringToList(tests),
+            notes,
+            referral,
             followUpDate,
             createdAt
         );

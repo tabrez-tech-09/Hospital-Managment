@@ -61,4 +61,9 @@ public List<DoctorDropDown> getAllDoctorsForDropDown() throws HmsException {
     return doctorRepository.findAllDoctorsForDropDown();
 }
 
+    @Override
+    public List<DoctorDropDown> getDoctorsByIdsForDropDown(List<Long> doctorIds) throws HmsException {
+        return doctorRepository.findDoctorsByIdsForDropDown(doctorIds);
+    }
+
 }

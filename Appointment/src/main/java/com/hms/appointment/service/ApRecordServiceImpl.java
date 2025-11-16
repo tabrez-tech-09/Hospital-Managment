@@ -1,10 +1,13 @@
 package com.hms.appointment.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.hms.appointment.clients.ProfileClient;
 import com.hms.appointment.dto.ApRecordDTO;
+import com.hms.appointment.dto.RecordDetails;
 import com.hms.appointment.entity.ApRecord;
 import com.hms.appointment.exception.HmsException;
 import com.hms.appointment.repository.ApRecordRepository;
@@ -20,6 +23,7 @@ public class ApRecordServiceImpl implements ApRecordService {
 
     private final ApRecordRepository apRecordRepository;
     private final PrescriptionService prescriptionService;
+    private final ProfileClient profileClient;
 
     @Override
     public long createApRecord(ApRecordDTO request) throws HmsException {
@@ -78,5 +82,40 @@ public ApRecordDTO getApRecordDetailsByAppointmentId(Long appointmentId) throws 
 
     return dto;
 }
+
+    @Override
+    public List<RecordDetails> getApRecordsByPatientId(Long patientId) throws HmsException {
+        List<ApRecord> records = apRecordRepository.findByPatient_Id(patientId);
+
+        List<RecordDetails> recordDetailsList = records.stream()
+                .map(ApRecord::toRecordDetails)
+                .toList();
+
+        List<Long> doctorIds = recordDetailsList.stream()
+                .map(RecordDetails::getDoctorId)
+                .distinct()
+                .toList();
+
+        List<DoctorName> doctors = profileClient.getDoctorsByIdsForDropDown(doctorIds);
+
+        Map<Long, String> doctorIdNameMap = doctors.stream()
+                .collect(Collectors.toMap(DoctorName::getId, DoctorName::getName));
+
+                recordDetailsList.forEach(recordDetails -> {
+            String doctorName = doctorIdNameMap.get(recordDetails.getDoctorId());
+            if(doctorName != null) {
+                recordDetails.setDoctorName(doctorName);
+            }else{
+                recordDetails.setDoctorName("Unknown Doctor");
+            }
+            return recordDetails;
+        });
+
+    }
+
+    @Override
+    public boolean isRecordExists(Long appointmentId) throws HmsException {
+        return apRecordRepository.existsByAppointment_Id(appointmentId);
+    }
 
 }

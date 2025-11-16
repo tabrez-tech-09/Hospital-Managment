@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class ApRecordApi {
 
     private final ApRecordService apRecordService;
+    private final PrescriptionService prescriptionService;
 
     @PostMapping("/create")
     public ResponseEntity<Long> createApRecord(@RequestBody ApRecordDTO request) throws HmsException {
@@ -45,4 +46,21 @@ public class ApRecordApi {
     public ResponseEntity<ApRecordDTO> getById(@PathVariable Long recordId) throws HmsException {
         return new ResponseEntity<>(apRecordService.getApRecordById(recordId), HttpStatus.OK);
     }
+
+    @GetMapping("/getRecordByPatientId/{patientId}")
+    public ResponseEntity<?> getRecordByPatientId(@PathVariable Long patientId) throws HmsException {
+        return new ResponseEntity<>(apRecordService.getApRecordsByPatientId(patientId), HttpStatus.OK);
+    }
+
+    @GetMapping("/isRecordExists/{appointmentId}")
+    public ResponseEntity<Boolean> isRecordExists(@PathVariable Long appointmentId) throws HmsException {
+        boolean exists = apRecordService.isRecordExists(appointmentId);
+        return new ResponseEntity<>(exists, HttpStatus.OK);
+    }
+
+    @GetMapping("/getPrescriptionByPatientId/{patientId}")
+    public ResponseEntity<?> getPrescriptionByPatientId(@PathVariable Long patientId) throws HmsException {
+        return new ResponseEntity<>(prescriptionService.getPrescriptionByPatientId(patientId), HttpStatus.OK);
+    }
+
 }

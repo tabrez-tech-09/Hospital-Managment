@@ -17,8 +17,11 @@ public interface DoctorRepository extends CrudRepository<Doctor, Long> {
     // find doctor by license number
     Optional<Doctor> findByLicenseNO(String licenseNO);
 
-     @Query("SELECT d.id AS id, d.name AS name FROM Doctor d")
+    @Query("SELECT d.id AS id, d.name AS name FROM Doctor d")
     List<DoctorDropDown> findAllDoctorsForDropDown();
+
+    @Query("SELECT d.id AS id , d.name FROM Doctor d WHERE d.id in ?1")
+    List<DoctorDropDown> findDoctorsByIdsForDropDown(List<Long> doctorIds);
 }
 
 

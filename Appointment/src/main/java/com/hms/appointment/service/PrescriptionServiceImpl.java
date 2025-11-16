@@ -1,8 +1,13 @@
 package com.hms.appointment.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
+import com.hms.appointment.clients.ProfileClient;
+import com.hms.appointment.dto.DoctorName;
 import com.hms.appointment.dto.PrescriptionDTO;
+import com.hms.appointment.dto.PrescriptionDetails;
 import com.hms.appointment.exception.HmsException;
 import com.hms.appointment.repository.PrescriptionRepository;
 
@@ -16,6 +21,7 @@ public class PrescriptionServiceImpl implements PrescriptionService {
 
     private final PrescriptionRepository prescriptionRepository;
     private final MedicineService medicineService;
+    private final ProfileClient profileClient;
 
     @Override
     public Long savePrescription(PrescriptionDTO request) {
@@ -57,4 +63,30 @@ public class PrescriptionServiceImpl implements PrescriptionService {
 
         return dto;
     }
+
+    @Override
+    public List<PrescriptionDetails> getPrescriptionsByPatientId(Long patientId) throws HmsException {
+        List<Prescription> prescriptions = prescriptionRepository.findByPatientId(patientId);
+
+        List<PrescriptionDetails> prescriptionDetails = prescriptions.stream()
+                .map(prescription :: toDetails)
+                .toList();
+                prescriptionDetails.forEach(details -> {
+                    try {
+                        details.setMedicines(medicineService.getAllMedicinesByPrescription(details.getId()));
+                    } catch (HmsException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        List<Long> doctorIds = prescriptionDetails.stream()
+                .map(PrescriptionDetails::getDoctorId)
+                .distinct()
+                .toList();
+                List<DoctorName> doctorNames = profileClient.getDoctorNamesByIds(doctorIds);
+                Map<Long, String> doctorIdNameMap = doctorNames.stream()
+                .collect(Collectors.toMap(DoctorName::getId, DoctorName::getName));
+                prescriptionDetails.forEach(details -> {
+                    details.setDoctorName(doctorIdNameMap.get(details.getDoctorId()));
+                });
+        return prescriptionDetails;
 }

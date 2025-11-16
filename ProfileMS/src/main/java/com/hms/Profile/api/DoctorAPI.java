@@ -64,5 +64,14 @@ public ResponseEntity<List<DoctorDropDown>> getAllDoctorsForDropDown() {
         return ResponseEntity.badRequest().body(Collections.emptyList());
     }
 }
+    @GetMapping("/getDoctorsByIdsForDropDown")
+    public ResponseEntity<List<DoctorDropDown>> getDoctorsByIdsForDropDown(@RequestParam List<Long> doctorIds) {
+        try {
+            List<DoctorDropDown> doctorDTO = doctorService.getDoctorsByIdsForDropDown(doctorIds);
+            return ResponseEntity.ok(doctorDTO);
+        } catch (HmsException e) {
+            return ResponseEntity.badRequest().body(Collections.emptyList());
+        }
+    }
 
 }
